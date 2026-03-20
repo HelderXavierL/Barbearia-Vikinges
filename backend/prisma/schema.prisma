@@ -1,0 +1,224 @@
+// =============================================
+// Barbearia Vikings — Prisma Schema
+// =============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== ENUMS =====
+
+enum UserRole {
+  ADMIN
+  BARBER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+enum NotificationChannel {
+  INTERNAL
+  WHATSAPP
+  SMS
+}
+
+enum NotificationType {
+  CONFIRMATION
+  REMINDER
+  CANCELLATION
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ===== MODELS =====
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(BARBER)
+  phone        String
+  avatarUrl    String?  @map("avatar_url")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  services               BarberService[]
+  availabilities         Availability[]
+  availabilityExceptions AvailabilityException[]
+  bookings               Booking[]
+  stockMovements         StockMovement[]
+
+  @@map("users")
+}
+
+model Client {
+  id            String    @id @default(uuid())
+  name          String
+  phone         String    @unique
+  email         String?
+  totalBookings Int       @default(0) @map("total_bookings")
+  lastVisit     DateTime? @map("last_visit")
+  isRecurring   Boolean   @default(false) @map("is_recurring")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  bookings Booking[]
+
+  @@map("clients")
+}
+
+model Service {
+  id              String  @id @default(uuid())
+  name            String
+  description     String
+  price           Decimal @db.Decimal(10, 2)
+  durationMinutes Int     @default(35) @map("duration_minutes")
+  active          Boolean @default(true)
+  imageUrl        String? @map("image_url")
+  sortOrder       Int     @default(0) @map("sort_order")
+
+  // Relations
+  barbers  BarberService[]
+  bookings Booking[]
+
+  @@map("services")
+}
+
+model BarberService {
+  id        String @id @default(uuid())
+  userId    String @map("user_id")
+  serviceId String @map("service_id")
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serviceId])
+  @@map("barber_services")
+}
+
+model Availability {
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  dayOfWeek Int     @map("day_of_week") // 0 = Sunday, 6 = Saturday
+  startTime String  @map("start_time")  // "09:00"
+  endTime   String  @map("end_time")    // "18:00"
+  active    Boolean @default(true)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dayOfWeek])
+  @@map("availabilities")
+}
+
+model AvailabilityException {
+  id        String  @id @default(uuid())
+  userId    String  @map("user_id")
+  date      DateTime @db.Date
+  isBlocked Boolean  @default(true) @map("is_blocked")
+  startTime String?  @map("start_time")
+  endTime   String?  @map("end_time")
+  reason    String?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("availability_exceptions")
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  clientId  String        @map("client_id")
+  userId    String        @map("user_id") // barber
+  serviceId String        @map("service_id")
+  startTime DateTime      @map("start_time")
+  endTime   DateTime      @map("end_time")
+  status    BookingStatus @default(CONFIRMED)
+  notes     String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  client        Client         @relation(fields: [clientId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
+  service       Service        @relation(fields: [serviceId], references: [id])
+  notifications Notification[]
+
+  @@index([userId, startTime])
+  @@index([clientId, createdAt])
+  @@map("bookings")
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  price         Decimal  @db.Decimal(10, 2)
+  stockQuantity Int      @default(0) @map("stock_quantity")
+  stockMin      Int      @default(5) @map("stock_min")
+  imageUrl      String?  @map("image_url")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  stockMovements StockMovement[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id        String            @id @default(uuid())
+  productId String            @map("product_id")
+  userId    String            @map("user_id")
+  type      StockMovementType
+  quantity  Int
+  reason    String?
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@map("stock_movements")
+}
+
+model Notification {
+  id        String              @id @default(uuid())
+  bookingId String              @map("booking_id")
+  channel   NotificationChannel @default(INTERNAL)
+  type      NotificationType
+  status    NotificationStatus  @default(PENDING)
+  payload   String?
+  sentAt    DateTime?           @map("sent_at")
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@map("notifications")
+}
