@@ -231,17 +231,47 @@
     position: relative;
   }
   .section-rune-bg::before {
-    content: 'ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ';
+    content: 'ᚠ  ᚢ  ᚦ  ᚨ  ᚱ  ᚲ  ᚷ  ᚹ  ᚺ  ᚾ  ᛁ  ᛃ  ᛇ  ᛈ  ᛉ  ᛊ  ᛏ  ᛒ  ᛖ  ᛗ  ᛚ  ᛜ  ᛞ  ᛟ';
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 120px;
+    transform: translate(-50%, -50%) rotate(-5deg);
+    font-size: 72px;
     color: rgba(201, 169, 110, 0.015);
     white-space: nowrap;
     pointer-events: none;
     z-index: 0;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.3em;
+    user-select: none;
+    line-height: 2;
+  }
+  .section-rune-bg::after {
+    content: 'ᛟ  ᛞ  ᛜ  ᛚ  ᛗ  ᛖ  ᛒ  ᛏ  ᛊ  ᛉ  ᛈ  ᛇ  ᛃ  ᛁ  ᚾ  ᚺ  ᚹ  ᚷ  ᚲ  ᚱ  ᚨ  ᚦ  ᚢ  ᚠ';
+    position: absolute;
+    top: 35%;
+    left: 45%;
+    transform: translate(-50%, -50%) rotate(3deg);
+    font-size: 56px;
+    color: rgba(201, 169, 110, 0.012);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 0;
+    letter-spacing: 0.4em;
+    user-select: none;
+    line-height: 2;
+  }
+
+  /* ===== Viking Identity — Rune Border Accent ===== */
+  .rune-border-accent::before {
+    content: 'ᚠ ᚢ ᚦ ᚨ ᚱ';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: rgba(201, 169, 110, 0.08);
+    letter-spacing: 1.2em;
+    pointer-events: none;
     user-select: none;
   }
 

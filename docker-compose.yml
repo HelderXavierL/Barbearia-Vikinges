@@ -6,11 +6,12 @@ services:
     container_name: vikinges-db
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - '5433:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-vikinges}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vikinges_secret}
       POSTGRES_DB: ${POSTGRES_DB:-barbearia_vikinges}
+
       TZ: America/Sao_Paulo
     volumes:
       - postgres_data:/var/lib/postgresql/data

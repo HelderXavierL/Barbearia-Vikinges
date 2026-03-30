@@ -7,6 +7,7 @@ import { Calendar, ChevronDown } from 'lucide-react';
 import { Container } from '../components/layout/Container';
 import { useScrollTo } from '../hooks/useScrollTo';
 import logo from '../assets/logo.png';
+import heroBg from '../assets/hero.jpg';
 
 export function Hero() {
   const scrollTo = useScrollTo();
@@ -17,7 +18,10 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background layers */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0F] via-[#0A0A0F]/95 to-[#0A0A0F]" />
+      <div className="absolute inset-0">
+        <img src={heroBg} alt="" className="w-full h-full object-cover opacity-20" />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0F]/80 via-[#0A0A0F]/90 to-[#0A0A0F]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(201,169,110,0.06)_0%,_transparent_70%)]" />
       <div className="absolute inset-0 noise-overlay" />
       <div className="absolute inset-0 texture-metal" />
@@ -39,7 +43,7 @@ export function Hero() {
             <img
               src={logo}
               alt="Barbearia Vikings"
-              className="relative w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl"
+              className="relative w-40 h-40 md:w-48 md:h-48 object-contain drop-shadow-2xl"
             />
           </div>
 

@@ -22,8 +22,8 @@ export function Section({ id, children, className, variant = 'dark', animate = t
       ref={ref}
       className={clsx(
         'relative py-20 md:py-28 overflow-hidden',
-        variant === 'dark' && 'bg-dark',
-        variant === 'panel' && 'bg-panel',
+        variant === 'dark' && 'bg-dark section-rune-bg',
+        variant === 'panel' && 'bg-panel section-rune-bg',
         variant === 'transparent' && 'bg-transparent',
         animate && 'transition-all duration-700',
         animate && (isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'),
